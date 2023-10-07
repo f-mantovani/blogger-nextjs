@@ -1,4 +1,5 @@
 import { Schema, model, models, InferSchemaType, HydratedDocument } from 'mongoose'
+import { Infer } from 'next/dist/compiled/superstruct'
 
 const userSchema = new Schema(
 	{
@@ -6,12 +7,12 @@ const userSchema = new Schema(
 			type: String,
 			trim: true,
 			required: [true, 'Please provide a valid email'],
-			unique: true,
+			// unique: true,
 			// match
 		},
 		password: {
 			type: String,
-			required: true,
+			required: [true, 'Please provide a valid password'],
 		},
 		isVerified: {
 			type: Boolean,
@@ -25,6 +26,7 @@ const userSchema = new Schema(
 	{ timestamps: true }
 )
 
-const User = models.User || model('User', userSchema)
+export type UserInferred = InferSchemaType<typeof userSchema>
+export type UserDocument = HydratedDocument<UserInferred>
 
-export default User
+export const User = models.User || model('User', userSchema)
