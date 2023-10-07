@@ -12,18 +12,31 @@ type EmailProps = {
 	email: string
 	emailType: 'VERIFY' | 'PASSWORD'
 	hashedToken: string
+	options?: {
+		new: boolean
+		lean: boolean
+		validation: (status: string) => void
+	}
 }
 
-export const sendEmail = async ({ email, emailType, hashedToken }: EmailProps) => {
+export const sendEmail = async ({ email, emailType, hashedToken, options }: EmailProps) => {
+	const baseUrl = `${process.env.DOMAIN}/`
+	const isVerify = emailType === 'VERIFY' ? 'verifyemail' : 'resetpassword'
+	const params = new URLSearchParams()
+	params.set('token', hashedToken)
+
+	const url = new URL(`${baseUrl}${isVerify}?${params.toString()}`)
+
 	const mailOptions = {
 		from: process.env.GMAIL_USER,
 		to: email,
+
 		subject: `${emailType === 'VERIFY' ? 'Verify your account' : 'Reset your password'}`,
-		html: `<p>Click <a href="${process.env.DOMAIN}/verifyemail?token=${hashedToken}">here</a> to ${
+		html: `<p>Click <a href="${url.href}">here</a> to ${
 			emailType === 'VERIFY' ? 'verify your email' : 'reset your password'
 		} or copy the link below into your browser <span>${
-			process.env.DOMAIN
-		}/verifyemail?token=${hashedToken}<span> This link is valid for 15 minutes
+			url.href
+		}<span> This link is valid for 15 minutes
     `,
 	}
 

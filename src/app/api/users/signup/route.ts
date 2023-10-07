@@ -12,26 +12,31 @@ export const POST = async (request: NextRequest) => {
 
 		const userFromDB = await User.findOne({ email })
 
-		// if (userFromDB) {
-		// 	throw {
-		// 		message: 'User already registered',
-		// 		status: 400,
-		// 	}
-		// }
+		if (userFromDB) {
+			throw {
+				message: 'User already registered',
+				status: 400,
+			}
+		}
 
 		const passwordHash = await generateHash(password)
 
 		const newUser: UserDocument = await User.create({ email, password: passwordHash })
 
-		const hashedToken = encodeURIComponent(await generateHash(newUser._id.toString()))
+		const hashedToken = encodeURIComponent(crypto.randomUUID())
+
 		newUser.verifyToken = hashedToken
-		const expiry = dayjs().clone().add(15, 'minutes')
+		const expiry = dayjs().clone().add(15, 'minutes').toDate()
 		newUser.verifyTokenExpiry = new Date(expiry)
 		await newUser.save()
 
 		await sendEmail({ email, emailType: 'VERIFY', hashedToken })
 
-		return NextResponse.json({ message: 'User created successfully', newUser })
+		return NextResponse.json({
+			sucess: true,
+			message: 'User created successfully',
+			email: newUser.email,
+		})
 	} catch (error: any) {
 		error.path = 'Sign up'
 		return errorResponse(error)
