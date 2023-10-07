@@ -7,7 +7,7 @@ const userSchema = new Schema(
 			type: String,
 			trim: true,
 			required: [true, 'Please provide a valid email'],
-			// unique: true,
+			unique: true,
 			// match
 		},
 		password: {
