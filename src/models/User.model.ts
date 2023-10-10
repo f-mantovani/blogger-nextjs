@@ -1,5 +1,4 @@
-import { Schema, model, models, InferSchemaType, HydratedDocument } from 'mongoose'
-import { Infer } from 'next/dist/compiled/superstruct'
+import { Schema, model, models, InferSchemaType, HydratedDocument, Model } from 'mongoose'
 
 const userSchema = new Schema(
 	{
@@ -29,4 +28,4 @@ const userSchema = new Schema(
 export type UserInferred = InferSchemaType<typeof userSchema>
 export type UserDocument = HydratedDocument<UserInferred>
 
-export const User = models.User || model('User', userSchema)
+export const User: Model<UserInferred> = models.User || model('User', userSchema)
