@@ -2,10 +2,9 @@ import { NextResponse } from 'next/server'
 
 export const errorResponse = (error: {
 	message: string
-	success: boolean
 	status: number
 	path: string
-	extra: any
+	extra?: any
 }) =>
 	NextResponse.json(
 		{

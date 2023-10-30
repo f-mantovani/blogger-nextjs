@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { connect } from '@/database'
 import { User, UserDocument, UserInferred } from '@/models'
-import { errorResponse } from '@/helpers'
+import { errorResponse, verifyToken } from '@/helpers'
 import dayjs from 'dayjs'
+import { JwtPayload } from 'jsonwebtoken'
 
 connect()
 export const POST = async (request: NextRequest) => {
@@ -18,7 +19,17 @@ export const POST = async (request: NextRequest) => {
 			}
 		}
 
-		const date = dayjs().isBefore(dayjs(userFromDB.verifyTokenExpiry))
+		const decode = verifyToken(token) as JwtPayload
+
+		if (!decode.exp) {
+			throw {
+				message: `Expired token`,
+				status: 403,
+				extra: { _id: userFromDB._id },
+			}
+		}
+
+		const date = dayjs().isBefore(dayjs(decode.exp * 1000))
 
 		if (!date) {
 			throw {

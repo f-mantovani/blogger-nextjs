@@ -12,7 +12,8 @@ const VerifyEmail = () => {
 
 	const resendEmailVerification = async () => {
 		try {
-			const { data } = await authService.requestEmail(id!)
+			const { data } = await authService.requestEmail(id!, 'verify')
+			console.log(data)
 		} catch (error: any) {
 			const { data } = error
 			setSuccess(data.success)
@@ -29,6 +30,7 @@ const VerifyEmail = () => {
 			setSuccess(data.success)
 		} catch (error: any) {
 			const { data } = error
+			console.log(error)
 			setSuccess(data.success)
 			setId(data.extra._id)
 		}

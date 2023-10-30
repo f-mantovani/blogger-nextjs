@@ -12,14 +12,9 @@ type EmailProps = {
 	email: string
 	emailType: 'VERIFY' | 'PASSWORD'
 	hashedToken: string
-	options?: {
-		new: boolean
-		lean: boolean
-		validation: (status: string) => void
-	}
 }
 
-export const sendEmail = async ({ email, emailType, hashedToken, options }: EmailProps) => {
+export const sendEmail = async ({ email, emailType, hashedToken }: EmailProps) => {
 	const baseUrl = `${process.env.DOMAIN}/`
 	const isVerify = emailType === 'VERIFY' ? 'verifyemail' : 'resetpassword'
 	const params = new URLSearchParams()
